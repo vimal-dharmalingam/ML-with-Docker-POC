@@ -1,0 +1,38 @@
+
+FROM python:3
+
+MAINTAINER vimal dharmalingam <vimal.dharmalingam@swirecnco.com>
+
+# This prevents Python from writing out pyc files
+ENV PYTHONDONTWRITEBYTECODE 1
+# This keeps Python from buffering stdin/stdout
+ENV PYTHONUNBUFFERED 1
+
+
+WORKDIR /sentiment_analysis_Demo
+
+
+
+# install system dependencies
+RUN apt-get update \
+   && apt-get -y install gcc make \
+    && rm -rf /var/lib/apt/lists/*
+
+# install dependencies
+RUN pip install --no-cache-dir --upgrade pip
+
+# copy requirements.txt
+COPY ./requirements.txt   ./requirements.txt
+
+
+# install project requirements
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+
+COPY predict_sentiment_docker.py ./
+COPY ./trained_tfidf_vector.pkl ./trained_tfidf_vector.pkl
+
+
+
+CMD ["python3","./predict_sentiment_docker.py"]
